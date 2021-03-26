@@ -18,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     Timer t = new Timer();
-    private static int PERIOD = 1000;
+    private static final int THINK_TIME = 25;
+    private static final int MAX_TICKS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ProgressBar pb = findViewById(R.id.progress_bar);
+        pb.setMax(MAX_TICKS);
         number.observe(this , number -> {
             pb.setProgress(number);
         });
@@ -56,9 +58,14 @@ public class MainActivity extends AppCompatActivity {
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                number.postValue(number.getValue() + 1);
+                long start_time = 0;
+                if (start_time == 0) start_time = System.currentTimeMillis();
+                //int tick = number.getValue();
+                if(System.currentTimeMillis() - start_time> THINK_TIME*1000) this.cancel();
+
+                number.postValue(number.getValue()+ 1);
             }
-        }, 2000, PERIOD);
+        }, 2000, THINK_TIME*1000 /MAX_TICKS);
     }
 
 }
